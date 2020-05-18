@@ -6,12 +6,12 @@ export default function BubbleSortColoring(arr){
 
     for(var i = 0; i < arr.length; i++){
         for(var j = 0; j < arr.length - i - 1; j++){
-            coloredArray.push([arrayCopy[j], arrayCopy[j + 1]]);
+            coloredArray.push([j, j + 1]);
 
             if(arrayCopy[j] > arrayCopy[j + 1]){
 
                 swap(arrayCopy, j, j + 1);                                //Fix to implement support for repeated values
-                coloredArray.push([arrayCopy[j], arrayCopy[j + 1]]); 
+                coloredArray.push([j, j + 1]); 
             }
         }
     }

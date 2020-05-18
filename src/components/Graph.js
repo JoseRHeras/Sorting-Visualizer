@@ -43,29 +43,31 @@ class Graph extends React.Component{
         const visualArray = BubbleSort(this.state.columnValues);
         const barStyle = document.getElementsByClassName('column');
 
-        console.log(visualArray);
-        console.log(barStyle);
+        console.log();
 
         for(var i = 0; i < visualArray.length; i++){
 
             const[pointAIndex, pointBIndex] = visualArray[i];
 
-            const barOne = barStyle[pointAIndex.toString()].style;
-            const barTwo = barStyle[pointBIndex.toString()].style;
+            const barOne = barStyle[pointAIndex].style;
+            const barTwo = barStyle[pointBIndex].style;
 
             setTimeout(() => {
                 barOne.backgroundColor = SECONDARY_COLOR;
                 barTwo.backgroundColor = SECONDARY_COLOR;
-              }, 2000);
+              }, i * 300);
 
-            // pointA.backgroundColor = SECONDARY_COLOR;
-            // pointB.backgroundColor = SECONDARY_COLOR;
+            setTimeout(() => {
+                barOne.backgroundColor = PRIMARY_COLOR;
+                barTwo.backgroundColor = PRIMARY_COLOR;
+            }, i * 400);
         }
     }
 
 
     render(){
         //Create Bar components using data from columnValues Array
+
         const GraphColumnComponents = this.state.columnValues.map((value) => 
             <GraphColumn key={value} height={value} color={PRIMARY_COLOR}/>);
 
