@@ -1,11 +1,15 @@
 import React from 'react';
 import GraphColumn from './GraphColumn';
 import BubbleSort from './BubbleSort';
-import './Graph.css'
-
-const PRIMARY_COLOR = 'red';
-const SECONDARY_COLOR = 'blue';
-const TIME = 800;       //800 testing time
+import './Graph.css';
+import ButtonBar from './ButtonBar';
+import { Grid } from '@material-ui/core';
+ 
+const PRIMARY_COLOR = 'red';        //Default color
+const SECONDARY_COLOR = 'blue';     //Color which indicates current position
+const TIME = 0.05;       //Set the time interval
+// const SIZE = 550;     //Number of elements to be sorted
+const SIZE = getResolution();
 
 class Graph extends React.Component{
     constructor() {
@@ -14,14 +18,12 @@ class Graph extends React.Component{
             columnValues: []
         }
         this.handleClick = this.handleClick.bind(this);
-        // this.handleSolve = this.handleSolve.bind(this);
         this.bubbleSortVisualizer = this.bubbleSortVisualizer.bind(this);
     }
 
     //Generates a new array on mounting of a new state
     componentDidMount() {
         const newColumnValues = generateArray();
-        // console.log(newColumnValues);
         this.setState({columnValues: newColumnValues})
     }
 
@@ -30,7 +32,7 @@ class Graph extends React.Component{
     }
 
 
-    //Bubble sort
+    //Bubble sort implementation
     bubbleSortVisualizer(){
         //Perfrom bubble sort and retrieves an array containing sequences to be used in the animation procedure.
         const visualArray = BubbleSort(this.state.columnValues);
@@ -86,25 +88,46 @@ class Graph extends React.Component{
 
         return(
             <div>
-                <button onClick={this.handleClick}>Generate Numbers</button>
-                <button onClick={this.bubbleSortVisualizer}>Bubble Sort</button>
+                <Grid item lg={12}>
+                    <ButtonBar 
+                        generateArray={this.handleClick}
+                        bubbleSort={this.bubbleSortVisualizer}          
+                    />
+                </Grid>
+
                 {/* Display elements on the screen */}
-                <div className="bar-container">
-                    {GraphColumnComponents}                 
-                </div>
+                {/* <div className="bar-container">
+                    <Grid item lg={11}>
+                        {GraphColumnComponents}  
+                    </Grid>               
+                </div> */}
+
+
+                <Grid item lg={12}>
+                    {GraphColumnComponents}  
+                </Grid>               
             </div>
         );
     }
 }
 
+//Function which genrates array of size "SIZE"
+//SIZE is a constant defined by getResolution() when app is created.
+//Takes no parameters and returns an array with "SIZE" elements 
 function generateArray (){
     const numberArray = [];
 
-    for(var i = 0; i < 10; i++){
+    for(var i = 0; i < SIZE; i++){
         numberArray.push(Math.round(Math.random() * 1000));
     }
     return numberArray;
 }
 
+//Function which get the size of the browser screen
+//Takes no input and return size of the screen divided by 5
+function getResolution() {
+    let resolution = window.innerWidth / 5;
+    return resolution;
+}
 
 export default Graph;

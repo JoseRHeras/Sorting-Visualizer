@@ -1,16 +1,25 @@
-.bar-container{
+/* .bar-container{
+    background-color: #CAD5CA;
     position: absolute;
     left: 100px;
     
     vertical-align: bottom;
     outline-style: dotted;
     height: 100%;
-}
+} */
 
 
 .column {
     display: inline-block;
-    width: 20px;
+    width: 2px;
     margin: 0 1px;
+    margin-top: 100px;
+}
+
+/* .bubble-sort {
     
 }
+
+.generate-numbers{
+    
+} */
