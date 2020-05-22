@@ -116,9 +116,10 @@ class Graph extends React.Component{
 //Takes no parameters and returns an array with "SIZE" elements 
 function generateArray (){
     const numberArray = [];
+    let maxSize = window.innerHeight / 1.33;        //Get the height of the screen to adjust max size of columns.
 
     for(var i = 0; i < SIZE; i++){
-        numberArray.push(Math.round(Math.random() * 1000));
+        numberArray.push(Math.round(Math.random() * maxSize));
     }
     return numberArray;
 }
