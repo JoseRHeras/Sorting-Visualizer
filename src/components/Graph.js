@@ -4,12 +4,21 @@ import BubbleSort from './BubbleSort';
 import './Graph.css';
 import ButtonBar from './ButtonBar';
 import { Grid } from '@material-ui/core';
+import SelectionSort from '../Algorithms/SelectionSort.js';
  
 const PRIMARY_COLOR = 'red';        //Default color
 const SECONDARY_COLOR = 'blue';     //Color which indicates current position
-const TIME = 0.05;       //Set the time interval
-// const SIZE = 550;     //Number of elements to be sorted
-const SIZE = getResolution();
+const SORTED_COLOR = 'green';       //Sorted element color. 
+
+//Set the time and the size of the graph:
+
+const TIME = 0.05;                  //Set the time interval     
+const SIZE = getResolution();       //Number of elements to be sorted
+
+//Temporal variables used for testing
+
+// const SIZE = 900;
+// const TIME = 10;
 
 class Graph extends React.Component{
     constructor() {
@@ -19,6 +28,7 @@ class Graph extends React.Component{
         }
         this.handleClick = this.handleClick.bind(this);
         this.bubbleSortVisualizer = this.bubbleSortVisualizer.bind(this);
+        this.handleSelectionSort = this.handleSelectionSort.bind(this);
     }
 
     //Generates a new array on mounting of a new state
@@ -33,6 +43,8 @@ class Graph extends React.Component{
 
 
     //Bubble sort implementation
+    //The main objective of this funtion is to handle bubble sort visualization.
+    //Its triggered throught a click event does not take any input.
     bubbleSortVisualizer(){
         //Perfrom bubble sort and retrieves an array containing sequences to be used in the animation procedure.
         const visualArray = BubbleSort(this.state.columnValues);
@@ -79,6 +91,80 @@ class Graph extends React.Component{
         }
     }
 
+    handleSelectionSort() {
+        const animationArray = SelectionSort(this.state.columnValues);
+        const barStyles = document.getElementsByClassName('column');
+        let sortedBar = true;
+        let lowestElementIndex;             //Stores the index of the element with the smallest element in the array.
+        let toBeSwappedElement;             //Stores the index of the element which is to be swapped with the smallest element in the array.
+        let currentPointerElement = -1;     //Servers as a placeholder to detect if the smallest element has changed.
+
+        for(let i = 0; i < animationArray.length; i++){
+            
+
+            if(animationArray[i].length === 1 || animationArray[i].length === 4){
+                sortedBar = !sortedBar;     //Serves as a on/off switch which is used to determine is a size swap is need it to be performed.
+
+                const [pointAIndex] = animationArray[i];
+                const barOne = barStyles[pointAIndex].style;
+                // const barTwo = animationArray[i].length === 4 ? barStyles[animationArray[i][1]].style : 0;
+
+                if(sortedBar){      //Takes care of the swapping of bar height along with changing color of a sorted bar.
+
+                    const barTwo = animationArray[i].length === 4 ? barStyles[animationArray[i][1]].style : 0;
+                    const color = pointAIndex === animationArray[i][1] ? SORTED_COLOR: PRIMARY_COLOR;
+                    setTimeout(() => {
+                        barOne.height = animationArray[i][3] + 'px';
+                        barTwo.height = animationArray[i][2] +  'px';
+                        barOne.backgroundColor = SORTED_COLOR;
+                        // barTwo.backgroundColor = PRIMARY_COLOR;
+                        barTwo.backgroundColor = color;      
+                    }, (i * TIME) + (TIME));
+                }
+                else{               //Hightlight which bar is to be swapped with the next smallest value on the array.
+                    setTimeout(() => {
+                        barOne.backgroundColor = SECONDARY_COLOR;
+                    }, (i * TIME) + (TIME));
+                    lowestElementIndex = pointAIndex;
+                    toBeSwappedElement = pointAIndex;
+                }
+            }
+            else{
+                const[pointAIndex, pointBIndex] = animationArray[i];
+                const barOne = barStyles[pointAIndex].style;
+                const barTwo = barStyles[pointBIndex].style;
+
+                /* If lowestElementIndex is the same as the new pointAIndex. No changes the lowest value therefore j
+                just the secondary bar needs to be updated.*/
+                if(lowestElementIndex === pointAIndex){       
+                    
+                    setTimeout(() => {
+                        barTwo.backgroundColor = SECONDARY_COLOR;
+                    }, (i * TIME) + (TIME));
+
+                    if(currentPointerElement === pointBIndex){
+                        setTimeout(() => {
+                            barTwo.backgroundColor = PRIMARY_COLOR;
+                        }, (i * TIME) + (TIME));
+                    }
+                    currentPointerElement = pointBIndex;
+
+                }else{
+                    /*Otherewise it indicates a change has ocurred therefore barOne is updated to PRIMARYCOLOR and the new 
+                    lowest element bar is kep with a secondary color and lowestElementIndex is changed to reflect this change */
+                    if(pointBIndex !== toBeSwappedElement){
+                        setTimeout(() => {
+                            barTwo.backgroundColor = PRIMARY_COLOR;
+                        }, (i * TIME) + (TIME));
+                    }
+
+                    lowestElementIndex = pointAIndex;
+                }
+            }
+        }
+        
+    }
+
 
     render(){
         //Create Bar components using data from columnValues Array
@@ -88,22 +174,17 @@ class Graph extends React.Component{
 
         return(
             <div>
-                <Grid item lg={12}>
+                {/* Calls ButtonBar fucntions. Pass event handlers as parameters */}
+                <Grid item >
                     <ButtonBar 
                         generateArray={this.handleClick}
-                        bubbleSort={this.bubbleSortVisualizer}          
+                        bubbleSort={this.bubbleSortVisualizer}
+                        selectionSort={this.handleSelectionSort}        
                     />
                 </Grid>
 
-                {/* Display elements on the screen */}
-                {/* <div className="bar-container">
-                    <Grid item lg={11}>
-                        {GraphColumnComponents}  
-                    </Grid>               
-                </div> */}
-
-
-                <Grid item lg={12}>
+                {/* Grid holds each indiviudal bar */}
+                <Grid item >
                     {GraphColumnComponents}  
                 </Grid>               
             </div>
@@ -111,12 +192,12 @@ class Graph extends React.Component{
     }
 }
 
-//Function which genrates array of size "SIZE"
-//SIZE is a constant defined by getResolution() when app is created.
+//Function which generates array where number of elements === const "SIZE"
+//SIZE is a constant defined by getResolution() when app is rendered.
 //Takes no parameters and returns an array with "SIZE" elements 
 function generateArray (){
     const numberArray = [];
-    let maxSize = window.innerHeight / 1.33;        //Get the height of the screen to adjust max size of columns.
+    let maxSize = window.innerHeight / 1.33;        //Size of the bar is adjusted using the size of the screen being used by the user.
 
     for(var i = 0; i < SIZE; i++){
         numberArray.push(Math.round(Math.random() * maxSize));
