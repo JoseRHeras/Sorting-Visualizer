@@ -1,6 +1,6 @@
 import React from 'react';
 
-function GraphColumn(props) {
+function Column(props) {
 
     const customStyle ={
         height: props.height + 'px',
@@ -12,4 +12,4 @@ function GraphColumn(props) {
     )
 }
 
-export default GraphColumn;
+export default Column;

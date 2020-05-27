@@ -1,10 +1,11 @@
 import React from 'react';
-import GraphColumn from './GraphColumn';
+import Column from './Column.js';
 import BubbleSort from './BubbleSort';
 import './Graph.css';
 import ButtonBar from './ButtonBar';
 import { Grid } from '@material-ui/core';
 import SelectionSort from '../Algorithms/SelectionSort.js';
+import InsertionSort from '../Algorithms/InsertionSort.js';
  
 const PRIMARY_COLOR = 'red';        //Default color
 const SECONDARY_COLOR = 'blue';     //Color which indicates current position
@@ -12,8 +13,7 @@ const SORTED_COLOR = 'green';       //Sorted element color.
 
 //Set the time and the size of the graph:
 
-const TIME = 0.05;                  //Set the time interval     
-const SIZE = getResolution();       //Number of elements to be sorted
+const TIME = 0.05;                  //Set the time interval 
 
 //Temporal variables used for testing
 
@@ -24,192 +24,179 @@ class Graph extends React.Component{
     constructor() {
         super();
         this.state = {
-            columnValues: []
+            randomIntArray: getNewRandonValuesArray()
         }
-        this.handleClick = this.handleClick.bind(this);
-        this.bubbleSortVisualizer = this.bubbleSortVisualizer.bind(this);
+        this.handleGenerate = this.handleGenerate.bind(this);
+        this.handleBubbleSort = this.handleBubbleSort.bind(this);
         this.handleSelectionSort = this.handleSelectionSort.bind(this);
+        this.handleInsertionSort = this.handleInsertionSort.bind(this);
     }
 
-    //Generates a new array on mounting of a new state
-    componentDidMount() {
-        const newColumnValues = generateArray();
-        this.setState({columnValues: newColumnValues})
+    handleGenerate(){
+        const columnElementsArray = document.getElementsByClassName('column');
+
+        for(let i = 0; i < columnElementsArray.length; i++){
+            let column = columnElementsArray[i].style;
+            column.backgroundColor = PRIMARY_COLOR;
+        }
+
+        this.setState({randomIntArray: getNewRandonValuesArray()})
     }
 
-    handleClick(){
-        this.setState({columnValues: generateArray()})
-    }
 
+    handleBubbleSort(){
+        const animationArray = BubbleSort(this.state.randomIntArray);
+        const columnElementsArray = document.getElementsByClassName('column');
 
-    //Bubble sort implementation
-    //The main objective of this funtion is to handle bubble sort visualization.
-    //Its triggered throught a click event does not take any input.
-    bubbleSortVisualizer(){
-        //Perfrom bubble sort and retrieves an array containing sequences to be used in the animation procedure.
-        const visualArray = BubbleSort(this.state.columnValues);
-        //Creates an array with references to the barColumn which are to be updated.
-        const barStyle = document.getElementsByClassName('column');
+        for(let i = 0; i < animationArray.length; i++){    
+            const[columnOneIndex, columnTwoIndex] = animationArray[i];
 
-        for(let i = 0; i < visualArray.length; i++){    //Modified const to let
-            //Index to be used to get the correspoding bar elements for barStyle array.
-            const[pointAIndex, pointBIndex] = visualArray[i];
-
-            //BarStyle which are updated or not depending of the values from visualArray
-            const barOne = barStyle[pointAIndex].style;
-            const barTwo = barStyle[pointBIndex].style;
+            const columnOne = columnElementsArray[columnOneIndex].style;
+            const columnTwo = columnElementsArray[columnTwoIndex].style;
        
-            //If the array to be executed contains a change this block will be executed
-            if(visualArray[i].length > 2){
+            if(animationArray[i].length > 2){
 
-                let barOneHeight = visualArray[i][2];           //variable contains the new height to be assigned to the bar 
-                let barTwoHeight = visualArray[i][3];
+                let columnOneHeight = animationArray[i][2];
+                let columnTwoHeight = animationArray[i][3];
 
-                setTimeout(() => {                          //Timer changes and switch colums
-                    barOne.backgroundColor = SECONDARY_COLOR;
-                    barTwo.backgroundColor = SECONDARY_COLOR;
-                    barOne.height = barOneHeight + "px";    //Height of the bar element is change to simutale switch
-                    barTwo.height = barTwoHeight + "px";    //of bars
+                setTimeout(() => {                         
+                    columnOne.backgroundColor = SECONDARY_COLOR;
+                    columnTwo.backgroundColor = SECONDARY_COLOR;
+                    columnOne.height = columnOneHeight + "px";    
+                    columnTwo.height = columnTwoHeight + "px";    
                 }, i * TIME);
 
                 setTimeout(() => {
-                    barOne.backgroundColor = PRIMARY_COLOR;
-                    barTwo.backgroundColor = PRIMARY_COLOR;
-                }, (i * TIME) + (TIME * 1.0));//((i * TIME) * 0.05));       //Old time 1000. Adds delay between color switch
+                    columnOne.backgroundColor = PRIMARY_COLOR;
+                    columnTwo.backgroundColor = PRIMARY_COLOR;
+                }, (i * TIME) + (TIME * 1.0));
 
-            }else{  //If no switch occurs then this bloc executes.
+            }
+            else{
                 setTimeout(() => {
-                    barOne.backgroundColor = SECONDARY_COLOR;
-                    barTwo.backgroundColor = SECONDARY_COLOR;
+                    columnOne.backgroundColor = SECONDARY_COLOR;
+                    columnTwo.backgroundColor = SECONDARY_COLOR;
                 }, i * TIME);
 
                 setTimeout(() => {
-                    barOne.backgroundColor = PRIMARY_COLOR;
-                    barTwo.backgroundColor = PRIMARY_COLOR;
-                }, (i * TIME) + (TIME * 1.0));//((i * TIME) * 0.05));        // 1000 old time. Extra cal creates delay between color switch
+                    columnOne.backgroundColor = PRIMARY_COLOR;
+                    columnTwo.backgroundColor = PRIMARY_COLOR;
+                }, (i * TIME) + (TIME * 1.0));
             }
         }
     }
 
     handleSelectionSort() {
-        const animationArray = SelectionSort(this.state.columnValues);
-        const barStyles = document.getElementsByClassName('column');
-        let sortedBar = true;
-        let lowestElementIndex;             //Stores the index of the element with the smallest element in the array.
-        let toBeSwappedElement;             //Stores the index of the element which is to be swapped with the smallest element in the array.
-        let currentPointerElement = -1;     //Servers as a placeholder to detect if the smallest element has changed.
+        const animationArray = SelectionSort(this.state.randomIntArray);
+        const columnElementsArray = document.getElementsByClassName('column');
+
+        let swapColumnHeight;
+        let storedSmallestIntegerIndex;             
+        let leftIntegerIndex;             
+        let integerBeingComparedToLeftInt = -1;   
 
         for(let i = 0; i < animationArray.length; i++){
-            
 
             if(animationArray[i].length === 1 || animationArray[i].length === 4){
-                sortedBar = !sortedBar;     //Serves as a on/off switch which is used to determine is a size swap is need it to be performed.
+                swapColumnHeight = animationArray[i].length === 4 ? true: false;
+                const [columnOneIndex] = animationArray[i];
+                const columnOne = columnElementsArray[columnOneIndex].style;
 
-                const [pointAIndex] = animationArray[i];
-                const barOne = barStyles[pointAIndex].style;
-                // const barTwo = animationArray[i].length === 4 ? barStyles[animationArray[i][1]].style : 0;
+                if(swapColumnHeight){                   
+                    const columnTwo = columnElementsArray[animationArray[i][1]].style;
+                    const columnTwoColor = columnOneIndex === animationArray[i][1] ? SORTED_COLOR: PRIMARY_COLOR;
 
-                if(sortedBar){      //Takes care of the swapping of bar height along with changing color of a sorted bar.
-
-                    const barTwo = animationArray[i].length === 4 ? barStyles[animationArray[i][1]].style : 0;
-                    const color = pointAIndex === animationArray[i][1] ? SORTED_COLOR: PRIMARY_COLOR;
                     setTimeout(() => {
-                        barOne.height = animationArray[i][3] + 'px';
-                        barTwo.height = animationArray[i][2] +  'px';
-                        barOne.backgroundColor = SORTED_COLOR;
-                        // barTwo.backgroundColor = PRIMARY_COLOR;
-                        barTwo.backgroundColor = color;      
+                        columnOne.height = animationArray[i][3] + 'px';
+                        columnTwo.height = animationArray[i][2] +  'px';
+                        columnOne.backgroundColor = SORTED_COLOR;
+                        columnTwo.backgroundColor = columnTwoColor;      
                     }, (i * TIME) + (TIME));
                 }
-                else{               //Hightlight which bar is to be swapped with the next smallest value on the array.
+                else{   
                     setTimeout(() => {
-                        barOne.backgroundColor = SECONDARY_COLOR;
+                        columnOne.backgroundColor = SECONDARY_COLOR;
                     }, (i * TIME) + (TIME));
-                    lowestElementIndex = pointAIndex;
-                    toBeSwappedElement = pointAIndex;
+
+                    storedSmallestIntegerIndex = columnOneIndex;
+                    leftIntegerIndex = columnOneIndex;
                 }
             }
             else{
-                const[pointAIndex, pointBIndex] = animationArray[i];
-                const barOne = barStyles[pointAIndex].style;
-                const barTwo = barStyles[pointBIndex].style;
+                const[columnOneIndex, columnTwoIndex] = animationArray[i];
+                const columnTwo = columnElementsArray[columnTwoIndex].style;
 
-                /* If lowestElementIndex is the same as the new pointAIndex. No changes the lowest value therefore j
-                just the secondary bar needs to be updated.*/
-                if(lowestElementIndex === pointAIndex){       
+                if(storedSmallestIntegerIndex === columnOneIndex){       
                     
                     setTimeout(() => {
-                        barTwo.backgroundColor = SECONDARY_COLOR;
+                        columnTwo.backgroundColor = SECONDARY_COLOR;
                     }, (i * TIME) + (TIME));
 
-                    if(currentPointerElement === pointBIndex){
+                    if(integerBeingComparedToLeftInt === columnTwoIndex){
                         setTimeout(() => {
-                            barTwo.backgroundColor = PRIMARY_COLOR;
-                        }, (i * TIME) + (TIME));
-                    }
-                    currentPointerElement = pointBIndex;
-
-                }else{
-                    /*Otherewise it indicates a change has ocurred therefore barOne is updated to PRIMARYCOLOR and the new 
-                    lowest element bar is kep with a secondary color and lowestElementIndex is changed to reflect this change */
-                    if(pointBIndex !== toBeSwappedElement){
-                        setTimeout(() => {
-                            barTwo.backgroundColor = PRIMARY_COLOR;
+                            columnTwo.backgroundColor = PRIMARY_COLOR;
                         }, (i * TIME) + (TIME));
                     }
 
-                    lowestElementIndex = pointAIndex;
+                    integerBeingComparedToLeftInt = columnTwoIndex;
+                }
+                else{
+                    if(columnTwoIndex !== leftIntegerIndex){
+                        setTimeout(() => {
+                            columnTwo.backgroundColor = PRIMARY_COLOR;
+                        }, (i * TIME) + (TIME));
+                    }
+
+                    storedSmallestIntegerIndex = columnOneIndex;
                 }
             }
         }
         
     }
 
+    handleInsertionSort() {
+        const animation = InsertionSort(this.state.randomIntArray);
+        // console.log(animation);
+
+        const columnElementsArray = document.getElementsByClassName('column');
+
+        for(let i = 0; i < animation.length; i++){
+
+            
+
+        }
+    }
 
     render(){
-        //Create Bar components using data from columnValues Array
-
-        const GraphColumnComponents = this.state.columnValues.map((value, idx) => 
-            <GraphColumn key={idx} height={value} color={PRIMARY_COLOR}/>);
-
         return(
             <div>
-                {/* Calls ButtonBar fucntions. Pass event handlers as parameters */}
                 <Grid item >
                     <ButtonBar 
-                        generateArray={this.handleClick}
-                        bubbleSort={this.bubbleSortVisualizer}
-                        selectionSort={this.handleSelectionSort}        
+                        generateNewRandomArray={this.handleGenerate}
+                        bubbleSort={this.handleBubbleSort}
+                        selectionSort={this.handleSelectionSort}
+                        insertionSort={this.handleInsertionSort}   
                     />
                 </Grid>
 
-                {/* Grid holds each indiviudal bar */}
                 <Grid item >
-                    {GraphColumnComponents}  
+                    {this.state.randomIntArray.map((value, idx) => <Column key={idx} height={value} color={PRIMARY_COLOR}/>)}
                 </Grid>               
             </div>
         );
     }
 }
 
-//Function which generates array where number of elements === const "SIZE"
-//SIZE is a constant defined by getResolution() when app is rendered.
-//Takes no parameters and returns an array with "SIZE" elements 
-function generateArray (){
-    const numberArray = [];
-    let maxSize = window.innerHeight / 1.33;        //Size of the bar is adjusted using the size of the screen being used by the user.
 
-    for(var i = 0; i < SIZE; i++){
-        numberArray.push(Math.round(Math.random() * maxSize));
+function getNewRandonValuesArray (){
+    const randomIntArray = [];
+    let maxHeightAllowed = window.innerHeight / 1.33;
+    let maxNumberOfElementsAllowed = window.innerWidth / 5;
+
+    for(var i = 0; i < maxNumberOfElementsAllowed; i++){
+        randomIntArray.push(Math.round(Math.random() * maxHeightAllowed));
     }
-    return numberArray;
-}
-
-//Function which get the size of the browser screen
-//Takes no input and return size of the screen divided by 5
-function getResolution() {
-    let resolution = window.innerWidth / 5;
-    return resolution;
+    return randomIntArray;
 }
 
 export default Graph;
