@@ -13,7 +13,7 @@ const SORTED_COLOR = 'green';       //Sorted element color.
 
 //Set the time and the size of the graph:
 
-const TIME = 0.05;                  //Set the time interval 
+const TIME = 5;                  //Set the time interval 
 
 //Temporal variables used for testing
 
@@ -155,12 +155,45 @@ class Graph extends React.Component{
     }
 
     handleInsertionSort() {
-        const animation = InsertionSort(this.state.randomIntArray);
+        const animationArray = InsertionSort(this.state.randomIntArray);
         // console.log(animation);
 
         const columnElementsArray = document.getElementsByClassName('column');
+        let setBarToSecondaryColor = true;
 
-        for(let i = 0; i < animation.length; i++){
+        for(let i = 0; i < animationArray.length; i++){
+            const[columnOneIndex, columnTwoIndex] = animationArray[i];
+            const columnOne = columnElementsArray[columnOneIndex].style;
+            const columnTwo = columnElementsArray[columnTwoIndex].style;
+
+            if(setBarToSecondaryColor){
+                setTimeout(() => {
+                    columnOne.backgroundColor = SECONDARY_COLOR;
+                    columnTwo.backgroundColor = SECONDARY_COLOR;
+                },(i * TIME) + (TIME))
+
+                setBarToSecondaryColor = false;
+            }
+
+            if(animationArray[i].length === 4){
+                let columnOneHeight = animationArray[i][2];
+                let columnTwoHeight = animationArray[i][3];
+                
+                setTimeout(() => {
+                    columnOne.height = columnOneHeight + 'px';
+                    columnTwo.height = columnTwoHeight + 'px';
+                }, (i * TIME) + (TIME));
+            }
+
+            else{
+                setTimeout(() => {
+                    columnOne.backgroundColor = PRIMARY_COLOR;
+                    columnTwo.backgroundColor = PRIMARY_COLOR;
+                },(i * TIME) + (TIME))
+                
+                setBarToSecondaryColor = true;
+            }
+
 
             
 
@@ -191,6 +224,7 @@ class Graph extends React.Component{
 function getNewRandonValuesArray (){
     const randomIntArray = [];
     let maxHeightAllowed = window.innerHeight / 1.33;
+    // let maxNumberOfElementsAllowed = 20
     let maxNumberOfElementsAllowed = window.innerWidth / 5;
 
     for(var i = 0; i < maxNumberOfElementsAllowed; i++){

@@ -4,31 +4,42 @@ function InsertionSort(arr){
 
     const animationArray = [];
     const arrCopy = arr.slice();
+    let isThereASwap = false;
 
     for(let i = 0; i < arrCopy.length; i++){
 
-        let animationFrame = [i];
-        let elementIndex = i;
+        let animationFrame = i === 0? [i, i]: [ i , i - 1];
+        let intBeingMovedIndex = i;
+
+        
         animationArray.push(animationFrame);
         
-        while(elementIndex > 0 && arrCopy[elementIndex] < arrCopy[elementIndex - 1]){
-            animationFrame = [elementIndex, elementIndex - 1];
+        while(intBeingMovedIndex > 0 && arrCopy[intBeingMovedIndex] < arrCopy[intBeingMovedIndex - 1]){
+            if(isThereASwap){
+                animationArray.push([i , i - 1])
+            }
+            
+            isThereASwap = true;
+
+            Swap(arrCopy, intBeingMovedIndex, intBeingMovedIndex-1)
+
+            animationFrame = [intBeingMovedIndex, intBeingMovedIndex - 1, arrCopy[intBeingMovedIndex], arrCopy[intBeingMovedIndex - 1]];
             animationArray.push(animationFrame);
 
-            Swap(arrCopy, elementIndex, elementIndex-1)
-
-            animationFrame = [elementIndex, elementIndex - 1];
+            animationFrame = [intBeingMovedIndex, intBeingMovedIndex - 1];
             animationArray.push(animationFrame);
 
-            elementIndex--;
+            intBeingMovedIndex--;
         }
 
-        if(animationFrame.length === 1){
+        if(!isThereASwap){
             animationArray.push(animationFrame);
         }
+
+        isThereASwap = false;
     }
 
-    // console.log(arrCopy);
+    console.log(animationArray);
 
     return animationArray;
 
