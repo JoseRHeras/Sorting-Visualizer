@@ -6,6 +6,7 @@ import ButtonBar from './ButtonBar';
 import { Grid } from '@material-ui/core';
 import SelectionSort from '../Algorithms/SelectionSort.js';
 import InsertionSort from '../Algorithms/InsertionSort.js';
+import getMergeSortAnimation from '../Algorithms/GetMergeSortAnimation.js';
  
 const PRIMARY_COLOR = 'red';        //Default color
 const SECONDARY_COLOR = 'blue';     //Color which indicates current position
@@ -13,7 +14,7 @@ const SORTED_COLOR = 'green';       //Sorted element color.
 
 //Set the time and the size of the graph:
 
-const TIME = 5;                  //Set the time interval 
+const TIME = 2;                  //Set the time interval 
 
 //Temporal variables used for testing
 
@@ -30,6 +31,7 @@ class Graph extends React.Component{
         this.handleBubbleSort = this.handleBubbleSort.bind(this);
         this.handleSelectionSort = this.handleSelectionSort.bind(this);
         this.handleInsertionSort = this.handleInsertionSort.bind(this);
+        this.handleMergeSort = this.handleMergeSort.bind(this);
     }
 
     handleGenerate(){
@@ -200,6 +202,39 @@ class Graph extends React.Component{
         }
     }
 
+    handleMergeSort(){
+        const animationSequence = getMergeSortAnimation(this.state.randomIntArray);
+        const columnElementsArray = document.getElementsByClassName('column');
+        let changeToPrimary = false;
+
+        for(let i = 0; i < animationSequence.length; i++){
+
+            const [columnOneIndex] = animationSequence[i];
+            const columnOne = columnElementsArray[columnOneIndex].style;
+
+            if(changeToPrimary){
+                setTimeout(() => {
+                    columnOne.backgroundColor = PRIMARY_COLOR;
+                }, (i * TIME) + (TIME));
+
+                changeToPrimary = !changeToPrimary;
+            }
+            else{
+                const columnOneHeight = animationSequence[i][1];
+
+                setTimeout(() => {
+                    columnOne.backgroundColor = SECONDARY_COLOR;
+                    columnOne.height = columnOneHeight + 'px';
+                    
+                },(i * TIME) + (TIME))
+                changeToPrimary = !changeToPrimary;
+            }
+            
+        }
+       
+
+    }
+
     render(){
         return(
             <div>
@@ -208,7 +243,8 @@ class Graph extends React.Component{
                         generateNewRandomArray={this.handleGenerate}
                         bubbleSort={this.handleBubbleSort}
                         selectionSort={this.handleSelectionSort}
-                        insertionSort={this.handleInsertionSort}   
+                        insertionSort={this.handleInsertionSort}
+                        mergeSort={this.handleMergeSort}
                     />
                 </Grid>
 
@@ -224,7 +260,7 @@ class Graph extends React.Component{
 function getNewRandonValuesArray (){
     const randomIntArray = [];
     let maxHeightAllowed = window.innerHeight / 1.33;
-    // let maxNumberOfElementsAllowed = 20
+    // let maxNumberOfElementsAllowed = 30;
     let maxNumberOfElementsAllowed = window.innerWidth / 5;
 
     for(var i = 0; i < maxNumberOfElementsAllowed; i++){
