@@ -21,7 +21,7 @@ const classes = useStyles();
             <Button color="secondary" variant="contained" onClick={prop.selectionSort}>Selection Sort</Button>
             <Button color="secondary" variant="contained" onClick={prop.insertionSort} >Insertion Sort</Button>
             <Button color="secondary" variant="contained" onClick={prop.mergeSort}>Merge Sort</Button>
-            <Button color="secondary" variant="contained">Quick Sort</Button>
+            <Button color="secondary" variant="contained" onClick={prop.quickSort}>Quick Sort</Button>
             <Button color="secondary" variant="contained">Heap Sort</Button>
             {/* <Button color="primary" variant="contained" onClick={prop.resetGraph}>Reset</Button> */}
         </div>

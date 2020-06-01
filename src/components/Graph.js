@@ -7,7 +7,9 @@ import { Grid } from '@material-ui/core';
 import SelectionSort from '../Algorithms/SelectionSort.js';
 import InsertionSort from '../Algorithms/InsertionSort.js';
 import getMergeSortAnimation from '../Algorithms/GetMergeSortAnimation.js';
- 
+import getQuickSortAnimation from '../Algorithms/QuickSort.js'
+
+
 const PRIMARY_COLOR = 'red';        //Default color
 const SECONDARY_COLOR = 'blue';     //Color which indicates current position
 const SORTED_COLOR = 'green';       //Sorted element color. 
@@ -32,6 +34,7 @@ class Graph extends React.Component{
         this.handleSelectionSort = this.handleSelectionSort.bind(this);
         this.handleInsertionSort = this.handleInsertionSort.bind(this);
         this.handleMergeSort = this.handleMergeSort.bind(this);
+        this.handleQuickSort = this.handleQuickSort.bind(this);
     }
 
     handleGenerate(){
@@ -231,8 +234,10 @@ class Graph extends React.Component{
             }
             
         }
-       
+    }
 
+    handleQuickSort(){
+        getQuickSortAnimation(this.state.randomIntArray);
     }
 
     render(){
@@ -245,6 +250,7 @@ class Graph extends React.Component{
                         selectionSort={this.handleSelectionSort}
                         insertionSort={this.handleInsertionSort}
                         mergeSort={this.handleMergeSort}
+                        quickSort={this.handleQuickSort}
                     />
                 </Grid>
 
@@ -260,7 +266,7 @@ class Graph extends React.Component{
 function getNewRandonValuesArray (){
     const randomIntArray = [];
     let maxHeightAllowed = window.innerHeight / 1.33;
-    // let maxNumberOfElementsAllowed = 30;
+    // let maxNumberOfElementsAllowed = 10;
     let maxNumberOfElementsAllowed = window.innerWidth / 5;
 
     for(var i = 0; i < maxNumberOfElementsAllowed; i++){
