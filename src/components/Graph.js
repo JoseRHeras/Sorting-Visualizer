@@ -8,6 +8,7 @@ import SelectionSort from '../Algorithms/SelectionSort.js';
 import InsertionSort from '../Algorithms/InsertionSort.js';
 import getMergeSortAnimation from '../Algorithms/GetMergeSortAnimation.js';
 import getQuickSortAnimation from '../Algorithms/QuickSort.js'
+import getHeapSortAnimation from '../Algorithms/HeapSort.js'
 
 
 const PRIMARY_COLOR = 'red';        //Default color
@@ -16,7 +17,7 @@ const SORTED_COLOR = 'green';       //Sorted element color.
 
 //Set the time and the size of the graph:
 
-const TIME = 2;                  //Set the time interval 
+const TIME = 20;                  //Set the time interval 
 
 //Temporal variables used for testing
 
@@ -35,6 +36,7 @@ class Graph extends React.Component{
         this.handleInsertionSort = this.handleInsertionSort.bind(this);
         this.handleMergeSort = this.handleMergeSort.bind(this);
         this.handleQuickSort = this.handleQuickSort.bind(this);
+        this.handleHeapSort = this.handleHeapSort.bind(this);
     }
 
     handleGenerate(){
@@ -237,7 +239,41 @@ class Graph extends React.Component{
     }
 
     handleQuickSort(){
-        getQuickSortAnimation(this.state.randomIntArray);
+        const animationSequence = getQuickSortAnimation(this.state.randomIntArray);
+        const columnElementsArray = document.getElementsByClassName('column');
+
+        for(let i = 0; i < animationSequence.length; i++){
+
+            const [columnOneIndex, columnTwoIndex] = animationSequence[i];
+            const columnOne = columnElementsArray[columnOneIndex].style;
+            const columnTwo = columnElementsArray[columnTwoIndex].style;
+
+
+            if(animationSequence[i].length === 4){
+                const columnOneHeight = animationSequence[i][2];
+                const columnTwoHeight = animationSequence[i][3];
+
+                setTimeout(() => {
+                    columnOne.height = columnOneHeight + 'px';
+                    columnTwo.height = columnTwoHeight + 'px';
+                    columnOne.backgroundColor = PRIMARY_COLOR;
+                    columnTwo.backgroundColor = PRIMARY_COLOR;
+                }, (i * TIME) + (TIME));
+            }
+            else{
+                setTimeout(() => {
+                    
+                    columnTwo.backgroundColor = SECONDARY_COLOR;
+                    columnOne.backgroundColor = SECONDARY_COLOR;
+
+                }, (i * TIME) + (TIME));
+            }
+        }
+    }
+
+    handleHeapSort(){
+        console.log(this.state.randomIntArray)
+        const animationArray = getHeapSortAnimation(this.state.randomIntArray);
     }
 
     render(){
@@ -251,6 +287,7 @@ class Graph extends React.Component{
                         insertionSort={this.handleInsertionSort}
                         mergeSort={this.handleMergeSort}
                         quickSort={this.handleQuickSort}
+                        heapSort={this.handleHeapSort}
                     />
                 </Grid>
 
@@ -266,8 +303,8 @@ class Graph extends React.Component{
 function getNewRandonValuesArray (){
     const randomIntArray = [];
     let maxHeightAllowed = window.innerHeight / 1.33;
-    // let maxNumberOfElementsAllowed = 10;
-    let maxNumberOfElementsAllowed = window.innerWidth / 5;
+    let maxNumberOfElementsAllowed = 7;
+    // let maxNumberOfElementsAllowed = window.innerWidth / 5;
 
     for(var i = 0; i < maxNumberOfElementsAllowed; i++){
         randomIntArray.push(Math.round(Math.random() * maxHeightAllowed));

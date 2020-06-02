@@ -5,22 +5,23 @@ function getQuickSortAnimation(arr){
     const arrCopy = arr.slice();
     console.log(arrCopy);
 
-    quickSort(arrCopy, 0, arrCopy.length - 1)
+    quickSort(arrCopy, 0, arrCopy.length - 1, animationArray)
 
-    console.log(arrCopy);
+    console.log(animationArray);
+    return animationArray;
 
 }
 
-function quickSort(arr, start, end){
+function quickSort(arr, start, end, animationArray){
     if(start < end){
-        let pivot = partition(arr, start, end);
+        let pivot = partition(arr, start, end, animationArray);
 
-        quickSort(arr, start , pivot - 1);
-        quickSort(arr, pivot + 1, end)
+        quickSort(arr, start , pivot - 1, animationArray);
+        quickSort(arr, pivot + 1, end, animationArray)
     }
 }
 
-function partition(arr, start , end){
+function partition(arr, start , end, animationArray){
     let pivot = arr[start];
 
     let leftSideIndex = start;
@@ -32,16 +33,22 @@ function partition(arr, start , end){
             leftSideIndex++;
         }
 
+        
         while(arr[rightSideIndex] > pivot){
             rightSideIndex--;
         }
 
         if(leftSideIndex < rightSideIndex){
+            animationArray.push([leftSideIndex, rightSideIndex])
             Swap(arr, leftSideIndex, rightSideIndex)
+            animationArray.push([leftSideIndex, rightSideIndex, arr[leftSideIndex], arr[rightSideIndex]])
         }
     }
 
+    animationArray.push([start, rightSideIndex])
     Swap(arr, start, rightSideIndex)
+    animationArray.push([start, rightSideIndex, arr[start], arr[rightSideIndex]])
+
 
     return rightSideIndex;
 }
