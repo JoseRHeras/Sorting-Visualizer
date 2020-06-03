@@ -17,7 +17,7 @@ const SORTED_COLOR = 'green';       //Sorted element color.
 
 //Set the time and the size of the graph:
 
-const TIME = 20;                  //Set the time interval 
+const TIME = 1;                  //Set the time interval 
 
 //Temporal variables used for testing
 
@@ -272,8 +272,36 @@ class Graph extends React.Component{
     }
 
     handleHeapSort(){
-        console.log(this.state.randomIntArray)
         const animationArray = getHeapSortAnimation(this.state.randomIntArray);
+        const columnElementsArray = document.getElementsByClassName('column');
+
+        for (let i = 0; i < animationArray.length; i++) {
+
+            const[columnOneIndex, columnTwoIndex] = animationArray[i];
+            const columnOne = columnElementsArray[columnOneIndex].style;
+            const columnTwo = columnElementsArray[columnTwoIndex].style;
+
+            if(animationArray[i].length === 4){
+                const columnOneHeight = animationArray[i][2];
+                const columnTwoHeight = animationArray[i][3];
+
+                setTimeout(() => {
+                    columnOne.height = columnOneHeight + 'px';
+                    columnTwo.height = columnTwoHeight + 'px';
+                    columnOne.backgroundColor = PRIMARY_COLOR;
+                    columnTwo.backgroundColor = PRIMARY_COLOR;
+                }, (i * TIME) + (TIME));
+            }
+            else{
+                setTimeout(() => {                  
+                    columnTwo.backgroundColor = SECONDARY_COLOR;
+                    columnOne.backgroundColor = SECONDARY_COLOR;
+
+                }, (i * TIME) + (TIME));
+            }
+            
+        }
+
     }
 
     render(){
@@ -303,8 +331,8 @@ class Graph extends React.Component{
 function getNewRandonValuesArray (){
     const randomIntArray = [];
     let maxHeightAllowed = window.innerHeight / 1.33;
-    let maxNumberOfElementsAllowed = 7;
-    // let maxNumberOfElementsAllowed = window.innerWidth / 5;
+    // let maxNumberOfElementsAllowed = 13;
+    let maxNumberOfElementsAllowed = window.innerWidth / 5;
 
     for(var i = 0; i < maxNumberOfElementsAllowed; i++){
         randomIntArray.push(Math.round(Math.random() * maxHeightAllowed));
